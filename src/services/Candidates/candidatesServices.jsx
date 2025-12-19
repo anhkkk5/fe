@@ -31,6 +31,9 @@ export const getMyCandidateProfile = async () => {
     return result;
   } catch (error) {
     const status = error?.response?.status;
+    if (status === 404) {
+      return null;
+    }
     if (status !== 401 && status !== 403) throw error;
 
     let candidateId = getCookie("id");
@@ -57,13 +60,41 @@ export const createMyCandidateProfile = async (options) => {
 };
 
 export const updateMyCandidateProfile = async (options) => {
-  const result = await edit("candidates/me", options);
-  return result;
+  try {
+    const result = await edit("candidates/me", options);
+    return result;
+  } catch (error) {
+    const status = error?.response?.status;
+    if (status === 404) {
+      const payload = {
+        fullName: options?.fullName || options?.name || "Chưa cập nhật",
+        email: options?.email,
+        phone: options?.phone,
+        dob: options?.dob,
+        gender: options?.gender,
+        address: options?.address,
+        introduction: options?.introduction,
+      };
+      return await createMyCandidateProfile(payload);
+    }
+    throw error;
+  }
 };
 
 export const updateIntroduction = async (intro) => {
-  const result = await edit("candidates/me", { introduction: intro });
-  return result;
+  try {
+    const result = await edit("candidates/me", { introduction: intro });
+    return result;
+  } catch (error) {
+    const status = error?.response?.status;
+    if (status === 404) {
+      return await createMyCandidateProfile({
+        fullName: "Chưa cập nhật",
+        introduction: intro,
+      });
+    }
+    throw error;
+  }
 };
 
 import { uploadImage, deleteImage } from "../Cloudinary/cloudinaryServices";

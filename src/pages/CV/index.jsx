@@ -165,7 +165,7 @@ function CVPage() {
   const handleSaveProfile = async () => {
     try {
       const values = await formProfile.validateFields();
-      await updateMyCandidateProfile({
+      const savedProfile = await updateMyCandidateProfile({
         fullName: values.fullName,
         name: values.fullName,
         position: values.position,
@@ -176,7 +176,7 @@ function CVPage() {
         gender: values.gender,
       });
       setCandidate((prev) => ({
-        ...prev,
+        ...(prev || {}),
         fullName: values.fullName,
         name: values.fullName,
         position: values.position,
@@ -185,9 +185,11 @@ function CVPage() {
         phone: values.phone,
         dob: values.dob ? values.dob.format("YYYY-MM-DD") : prev?.dob,
         gender: values.gender,
+        ...(savedProfile || {}),
       }));
       message.success("Đã lưu thông tin");
       setProfileModal(false);
+      await reloadSections();
     } catch (err) {
       if (err?.errorFields) return;
       console.error(err);
@@ -198,10 +200,17 @@ function CVPage() {
   const handleSaveIntro = async () => {
     try {
       const values = await formIntro.validateFields();
-      await updateMyCandidateProfile({ introduction: values.introduction });
-      setCandidate((prev) => ({ ...prev, introduction: values.introduction }));
+      const savedProfile = await updateMyCandidateProfile({
+        introduction: values.introduction,
+      });
+      setCandidate((prev) => ({
+        ...(prev || {}),
+        introduction: values.introduction,
+        ...(savedProfile || {}),
+      }));
       message.success("Đã lưu mục tiêu");
       setIntroModal(false);
+      await reloadSections();
     } catch (err) {
       if (err?.errorFields) return;
       console.error(err);
@@ -558,6 +567,22 @@ function CVPage() {
     try {
       const profile = await getMyCandidateProfile();
       const candidateId = profile?.id;
+
+      if (!candidateId) {
+        setCandidate(profile || {});
+        setEducation([]);
+        setExperience([]);
+        setProjects([]);
+        setCertificates([]);
+        setActivities([]);
+        setAwards([]);
+        setSkills([]);
+        setReferences([]);
+        setHobbies([]);
+        setProfileModal(true);
+        return;
+      }
+
       const [
         eduData,
         expData,
@@ -610,6 +635,21 @@ function CVPage() {
         setLoading(true);
         const profile = await getMyCandidateProfile();
         const candidateId = profile?.id;
+
+        if (!candidateId) {
+          setCandidate(profile || {});
+          setEducation([]);
+          setExperience([]);
+          setProjects([]);
+          setCertificates([]);
+          setActivities([]);
+          setAwards([]);
+          setSkills([]);
+          setReferences([]);
+          setHobbies([]);
+          setProfileModal(true);
+          return;
+        }
 
         const [
           eduData,
@@ -666,7 +706,12 @@ function CVPage() {
 
   if (!candidate) {
     return (
-      <div style={{ padding: 50, textAlign: "center" }}>Không tìm thấy CV</div>
+      <div style={{ padding: 50, textAlign: "center" }}>
+        <div style={{ marginBottom: 12 }}>Bạn chưa có hồ sơ ứng viên. Hãy tạo hồ sơ để bắt đầu tạo CV.</div>
+        <Button type="primary" onClick={() => setProfileModal(true)}>
+          Tạo hồ sơ
+        </Button>
+      </div>
     );
   }
 
@@ -2040,13 +2085,13 @@ function CVPage() {
           layout="vertical"
           form={formProfile}
           initialValues={{
-            fullName: candidate.fullName || candidate.name,
-            position: candidate.position,
-            address: candidate.address,
-            email: candidate.email,
-            phone: candidate.phone,
-            dob: candidate.dob ? dayjs(candidate.dob) : null,
-            gender: candidate.gender,
+            fullName: candidate?.fullName || candidate?.name,
+            position: candidate?.position,
+            address: candidate?.address,
+            email: candidate?.email,
+            phone: candidate?.phone,
+            dob: candidate?.dob ? dayjs(candidate.dob) : null,
+            gender: candidate?.gender,
           }}
         >
           <Form.Item
@@ -2097,7 +2142,7 @@ function CVPage() {
           layout="vertical"
           form={formIntro}
           initialValues={{
-            introduction: candidate.introduction,
+            introduction: candidate?.introduction,
           }}
         >
           <Form.Item

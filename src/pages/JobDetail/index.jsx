@@ -719,10 +719,7 @@ function JobDetail() {
                               key={candidate.id}
                               size="small"
                               hoverable
-                              onClick={() =>
-                                candidate.candidateId &&
-                                navigate(`/candidates/${candidate.candidateId}`)
-                              }
+                              onClick={() => handleOpenPdfModal(candidate)}
                             >
                               <div className="candidate-info">
                                 <Avatar size={40} className="candidate-avatar">

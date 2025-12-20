@@ -17,6 +17,10 @@ export default function UpgradeAccount() {
   const [topup, setTopup] = useState(null);
   const pollingRef = useRef(null);
 
+  const isPaid = String(topup?.status || "")
+    .trim()
+    .toUpperCase() === "PAID";
+
   const load = async () => {
     try {
       const token = getCookie("token") || localStorage.getItem("token");
@@ -68,8 +72,20 @@ export default function UpgradeAccount() {
     pollingRef.current = setInterval(async () => {
       try {
         const st = await getSepayTopupStatus(topupId);
-        setTopup((prev) => ({ ...(prev || {}), ...st }));
-        if (st?.status === "PAID") {
+        const paid = String(st?.status || "")
+          .trim()
+          .toUpperCase() === "PAID";
+
+        setTopup((prev) => {
+          const next = { ...(prev || {}), ...st };
+          if (paid) {
+            next.qrImageUrl = null;
+            next.qrContent = null;
+          }
+          return next;
+        });
+
+        if (paid) {
           clearInterval(pollingRef.current);
           pollingRef.current = null;
           message.success("Thanh toán thành công! Đang cập nhật số sao...");
@@ -140,7 +156,7 @@ export default function UpgradeAccount() {
                     <Text>Số tiền (VND): {topup?.amount ?? "-"}</Text>
                     <Text>Nội dung chuyển khoản (bắt buộc): {topup?.paymentCode || "-"}</Text>
 
-                    {topup?.status !== "PAID" && topup?.qrImageUrl ? (
+                    {!isPaid && topup?.qrImageUrl ? (
                       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
                         <img
                           src={topup.qrImageUrl}
@@ -150,7 +166,7 @@ export default function UpgradeAccount() {
                       </div>
                     ) : null}
 
-                    {topup?.qrContent ? (
+                    {!isPaid && topup?.qrContent ? (
                       <Text type="secondary">QR content: {topup.qrContent}</Text>
                     ) : null}
 

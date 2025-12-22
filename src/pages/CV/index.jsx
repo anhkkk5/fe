@@ -148,6 +148,7 @@ function CVPage() {
   const location = useLocation();
 
   const userType = getCookie("userType");
+  const authToken = getCookie("token") || localStorage.getItem("token");
   const printAreaRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [candidate, setCandidate] = useState(null);
@@ -195,6 +196,11 @@ function CVPage() {
   const [formSkill] = Form.useForm();
   const [formRef] = Form.useForm();
   const [formHobby] = Form.useForm();
+
+  useEffect(() => {
+    setDraft(null);
+    setCvId(null);
+  }, [authToken]);
 
   const getEditCvIdFromQuery = () => {
     const params = new URLSearchParams(location.search);
@@ -823,15 +829,16 @@ function CVPage() {
   }, [navigate, userType]);
 
   useEffect(() => {
-    if (draft) return;
+    if (draft && draft?._candidateId === candidate?.id) return;
     if (!candidate) return;
 
     setDraft({
+      _candidateId: candidate.id,
       candidate: {
         fullName: candidate.fullName || candidate.name || "",
         position: candidate.position || "",
         dob: candidate.dob || "",
-        gender: candidate.gender ?? "",
+        gender: candidate.gender || "",
         phone: candidate.phone || "",
         email: candidate.email || "",
         website: candidate.linkedin || candidate.facebook || "",

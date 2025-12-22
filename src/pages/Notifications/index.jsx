@@ -3,6 +3,7 @@ import { Button, Card, List, Space, Spin, Tag, Typography, message } from "antd"
 import { BellOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../helpers/cookie";
+import "./style.css";
 import {
   getMyNotifications,
   markNotificationRead,
@@ -62,9 +63,9 @@ function NotificationsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <Card bodyStyle={{ padding: 24 }}>
-        <Space style={{ width: "100%", justifyContent: "space-between" }}>
+    <div className="notifications-page">
+      <Card className="notifications-card" bodyStyle={{ padding: 24 }}>
+        <div className="notifications-header">
           <Title level={3} style={{ margin: 0 }}>
             <Space>
               <BellOutlined />
@@ -72,55 +73,48 @@ function NotificationsPage() {
             </Space>
           </Title>
           <Button onClick={load}>Tải lại</Button>
-        </Space>
+        </div>
 
         <div style={{ marginTop: 16 }}>
           <List
+            className="notifications-list"
             dataSource={items}
             locale={{ emptyText: "Chưa có thông báo" }}
             renderItem={(item) => (
-              <List.Item
-                actions={[
-                  item.read ? (
-                    <Tag color="green">Đã đọc</Tag>
-                  ) : (
-                    <Button type="link" onClick={() => onMarkRead(item.id)}>
-                      Đánh dấu đã đọc
-                    </Button>
-                  ),
-                  item.link ? (
-                    <Button
-                      type="link"
-                      onClick={() => {
-                        if (!item.read) onMarkRead(item.id);
-                        navigate(item.link);
-                      }}
-                    >
-                      Mở
-                    </Button>
-                  ) : null,
-                ].filter(Boolean)}
-              >
-                <List.Item.Meta
-                  title={
-                    <Space>
-                      <Text strong>{item.title}</Text>
-                      {!item.read && <Tag color="red">Mới</Tag>}
-                    </Space>
-                  }
-                  description={
-                    <div>
-                      <Text>{item.message || ""}</Text>
-                      <div style={{ marginTop: 6 }}>
-                        <Text type="secondary">
-                          {item.created_at
-                            ? new Date(item.created_at).toLocaleString("vi-VN")
-                            : ""}
-                        </Text>
-                      </div>
+              <List.Item className="notifications-list-item">
+                <div className={`notification-item ${item.read ? "is-read" : "is-unread"}`}>
+                  <div className="notification-top">
+                    <div className="notification-title-row">
+                      <Text strong className="notification-title">{item.title}</Text>
+                      {!item.read ? <Tag color="red">Mới</Tag> : <Tag color="green">Đã đọc</Tag>}
                     </div>
-                  }
-                />
+                    <Text type="secondary" className="notification-time">
+                      {item.created_at ? new Date(item.created_at).toLocaleString("vi-VN") : ""}
+                    </Text>
+                  </div>
+
+                  {item.message ? <div className="notification-message">{item.message}</div> : null}
+
+                  <div className="notification-actions">
+                    {!item.read ? (
+                      <Button size="small" onClick={() => onMarkRead(item.id)}>
+                        Đánh dấu đã đọc
+                      </Button>
+                    ) : null}
+                    {item.link ? (
+                      <Button
+                        size="small"
+                        type="primary"
+                        onClick={() => {
+                          if (!item.read) onMarkRead(item.id);
+                          navigate(item.link);
+                        }}
+                      >
+                        Mở
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
               </List.Item>
             )}
           />

@@ -59,6 +59,7 @@ function CompanyDetail() {
   const [companiesLoading, setCompaniesLoading] = React.useState(false);
   const [userType, setUserType] = React.useState("");
   const [currentCompanyId, setCurrentCompanyId] = React.useState("");
+  const [canEditCompany, setCanEditCompany] = React.useState(false);
   const [isFollowing, setIsFollowing] = React.useState(false);
   const [isFavorite, setIsFavorite] = React.useState(false);
   const [editModalVisible, setEditModalVisible] = React.useState(false);
@@ -75,6 +76,12 @@ function CompanyDetail() {
     const companyId = getCookie("companyId");
     setCurrentCompanyId(companyId || "");
   }, []);
+
+  React.useEffect(() => {
+    const type = getCookie("userType");
+    const companyId = getCookie("companyId");
+    setCanEditCompany(type === "company" && companyId && id && String(companyId) === String(id));
+  }, [id]);
 
   React.useEffect(() => {
     const fetchCompany = async () => {
@@ -319,16 +326,18 @@ function CompanyDetail() {
             title="Việc làm đang mở" 
             className="jobs-card"
             extra={
-              userType === "company" && currentCompanyId === id ? (
-                <Button 
-                  type="primary" 
-                  danger
-                  icon={<PlusOutlined />}
-                  onClick={() => navigate('/create-job')}
-                  className="add-job-btn"
-                >
-                  Thêm việc làm mới
-                </Button>
+              canEditCompany ? (
+                <Card className="action-card">
+                  <Button 
+                    type="primary" 
+                    danger
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/create-job')}
+                    className="add-job-btn"
+                  >
+                    Thêm việc làm mới
+                  </Button>
+                </Card>
               ) : null
             }
           >
@@ -491,7 +500,7 @@ function CompanyDetail() {
         {/* Sidebar */}
         <Col xs={24} lg={8}>
           {/* Action Buttons - Show based on user type */}
-          {userType === "company" && currentCompanyId === id ? (
+          {canEditCompany ? (
             // Show Edit button if the company is viewing their own page
             <Card className="action-card" style={{ marginBottom: 16 }}>
               <Button 

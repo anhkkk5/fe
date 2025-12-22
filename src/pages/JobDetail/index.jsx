@@ -60,6 +60,8 @@ function JobDetail() {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [isCompany, setIsCompany] = React.useState(false);
   const [isCandidate, setIsCandidate] = React.useState(false);
+  const [canEditJob, setCanEditJob] = React.useState(false);
+  const [isFollowingJob, setIsFollowingJob] = React.useState(false);
   const [updating, setUpdating] = React.useState(false);
   const [loadingApplications, setLoadingApplications] = React.useState(false);
   const [unlockingCandidateId, setUnlockingCandidateId] = React.useState(null);
@@ -78,6 +80,31 @@ function JobDetail() {
     setIsCompany(userType === "company");
     setIsCandidate(userType === "candidate");
   }, []);
+
+  React.useEffect(() => {
+    if (!job) return;
+    const userType = getCookie("userType");
+    const myCompanyId = getCookie("companyId");
+    const myUserId = getCookie("id");
+
+    if (userType === "company") {
+      const ownerByCompany = myCompanyId && String(job.company_id) === String(myCompanyId);
+      const ownerByUser = myUserId && String(job?.postedBy?.id) === String(myUserId);
+      setCanEditJob(!!(ownerByCompany || ownerByUser));
+    } else {
+      setCanEditJob(false);
+    }
+
+    const followKey = `followed_jobs_${myUserId || "anon"}`;
+    try {
+      const raw = localStorage.getItem(followKey);
+      const list = raw ? JSON.parse(raw) : [];
+      const exists = Array.isArray(list) && list.some((jid) => String(jid) === String(job.id));
+      setIsFollowingJob(!!exists);
+    } catch (_e) {
+      setIsFollowingJob(false);
+    }
+  }, [job]);
 
   React.useEffect(() => {
     if (!id) return;
@@ -289,6 +316,29 @@ function JobDetail() {
 
   const showUpdateModal = () => {
     setIsModalVisible(true);
+  };
+
+  const handleFollowJob = () => {
+    if (!job?.id) return;
+    const myUserId = getCookie("id");
+    const followKey = `followed_jobs_${myUserId || "anon"}`;
+    try {
+      const raw = localStorage.getItem(followKey);
+      const list = raw ? JSON.parse(raw) : [];
+      const next = Array.isArray(list) ? list : [];
+      const exists = next.some((jid) => String(jid) === String(job.id));
+      if (exists) {
+        message.info("Bạn đã theo dõi công việc này rồi.");
+        setIsFollowingJob(true);
+        return;
+      }
+      next.push(job.id);
+      localStorage.setItem(followKey, JSON.stringify(next));
+      setIsFollowingJob(true);
+      message.success("Đã theo dõi công việc.");
+    } catch (_e) {
+      message.error("Không thể theo dõi công việc.");
+    }
   };
 
   const handleCancel = () => {
@@ -619,7 +669,7 @@ function JobDetail() {
         <Col xs={24} lg={8}>
           <Card className="job-overview-card">
             {/* Update Button - Only show for company */}
-            {isCompany && (
+            {isCompany && canEditJob && (
               <Button
                 type="primary"
                 onClick={showUpdateModal}
@@ -631,6 +681,19 @@ function JobDetail() {
                 }}
               >
                 Cập Nhật Thông Tin
+              </Button>
+            )}
+
+            {isCompany && !canEditJob && (
+              <Button
+                type="default"
+                onClick={handleFollowJob}
+                style={{
+                  width: "100%",
+                  marginBottom: "20px",
+                }}
+              >
+                {isFollowingJob ? "Đã theo dõi" : "Theo dõi công việc"}
               </Button>
             )}
 

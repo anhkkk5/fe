@@ -77,6 +77,11 @@ function Login() {
       else if (role === "recruiter") setCookie("userType", "company", time);
       else setCookie("userType", "candidate", time);
 
+      if (role === "admin") {
+        const adminName = payload?.fullName || payload?.name || payload?.email || values.email;
+        setCookie("fullName", adminName || "", time);
+      }
+
       dispatch(checkLogin(true));
       messageApi.success("Đăng nhập thành công!");
 

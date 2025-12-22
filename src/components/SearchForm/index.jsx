@@ -7,6 +7,7 @@ import {
   InboxOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../../helpers/cookie";
 import { getAlljob } from "../../services/jobServices/jobServices";
 import { getAllCompany } from "../../services/getAllCompany/companyServices";
 import { getAllCandidates } from "../../services/Candidates/candidatesServices";
@@ -37,10 +38,13 @@ function Search() {
 
   useEffect(() => {
     const loadCounts = async () => {
+      const userType = getCookie("userType");
+      const shouldLoadCandidates = userType === "admin";
+
       const results = await Promise.allSettled([
         getAlljob(),
         getAllCompany(),
-        getAllCandidates(),
+        shouldLoadCandidates ? getAllCandidates() : Promise.resolve([]),
       ]);
       const jobs = results[0].status === "fulfilled" ? results[0].value : [];
       const companies =
@@ -81,8 +85,6 @@ function Search() {
         newJobs: newJobsCount,
       });
     };
-    console.log("counts", counts);
-    console.log("counts.newJobs", counts.newJobs);
     loadCounts();
   }, []);
 

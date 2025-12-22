@@ -927,25 +927,7 @@ function CVPage() {
 
   const latestProject = projectsSorted.length > 0 ? projectsSorted[0] : null;
 
-  const activitiesSorted = Array.isArray(activities)
-    ? [...activities].sort((a, b) => {
-        const aStart = a.started_at || a.startDate;
-        const bStart = b.started_at || b.startDate;
-        const aDate = aStart ? new Date(aStart) : 0;
-        const bDate = bStart ? new Date(bStart) : 0;
-        return bDate - aDate;
-      })
-    : [];
-
-  const certificatesSorted = Array.isArray(certificates)
-    ? [...certificates].sort((a, b) => {
-        const aStart = a.started_at || a.startDate;
-        const bStart = b.started_at || b.startDate;
-        const aDate = aStart ? new Date(aStart) : 0;
-        const bDate = bStart ? new Date(bStart) : 0;
-        return bDate - aDate;
-      })
-    : [];
+  const latestActivity = pickLatestByStartDate(activities);
 
   const awardsSorted = Array.isArray(awards)
     ? [...awards].sort((a, b) => {

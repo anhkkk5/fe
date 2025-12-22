@@ -49,6 +49,10 @@ import CompanyInterviewSchedules from "../pages/CompanyInterviewSchedules/index.
 import MyInterviews from "../pages/MyInterviews/index.jsx";
 import NotificationsPage from "../pages/Notifications/index.jsx";
 
+/* Friends */
+import FriendsPage from "../pages/Friends/index.jsx";
+import FriendRequestsPage from "../pages/Friends/Requests.jsx";
+
 /* Skill assessment */
 import SkillAssessment from "../pages/SkillAssessment/index.jsx";
 import TakeQuiz from "../pages/SkillAssessment/TakeQuiz.jsx";
@@ -129,6 +133,9 @@ export const routes = [
       { path: "company/interviews", element: <CompanyInterviewSchedules /> },
       { path: "interviews", element: <MyInterviews /> },
       { path: "notifications", element: <NotificationsPage /> },
+
+      { path: "friends", element: <FriendsPage /> },
+      { path: "friends/requests", element: <FriendRequestsPage /> },
 
       { path: "skill-assessment", element: <SkillAssessment /> },
       { path: "skill-assessment/take/:id", element: <TakeQuiz /> },

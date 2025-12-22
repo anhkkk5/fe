@@ -372,6 +372,11 @@ function Header() {
       onClick: () => navigate("/profile"),
     },
     {
+      key: "friends",
+      label: "Bạn bè",
+      onClick: () => navigate("/friends"),
+    },
+    {
       key: "logout",
       label: "Đăng xuất",
       onClick: handleLogout,

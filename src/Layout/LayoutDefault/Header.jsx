@@ -139,7 +139,19 @@ function Header() {
     const companyName = getCookie("companyName");
     const id = getCookie("companyId");
 
-    const name = type === "candidate" ? fullName : type === "admin" ? fullName : companyName;
+    if (type === "admin" && !fullName) {
+      try {
+        const payload = decodeJwt(token);
+        const adminName = payload?.fullName || payload?.name || payload?.email || "";
+        if (adminName) {
+          setCookie("fullName", adminName, 1);
+        }
+      } catch {}
+    }
+
+    const resolvedFullName = getCookie("fullName");
+
+    const name = type === "candidate" ? resolvedFullName : type === "admin" ? resolvedFullName : companyName;
     setUserName(name || "");
     if (type === "company" && id) {
       setCompanyId(id);

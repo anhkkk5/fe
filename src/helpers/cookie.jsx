@@ -3,10 +3,9 @@ export function setCookie(name, value, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
   var expires = "expires=" + d.toUTCString();
-  // Đảm bảo cookie được lưu trữ với path=/ và các thuộc tính bảo mật phù hợp
-  // Thêm secure=false để hoạt động trên HTTP và HTTPS
-  // Thêm domain để đảm bảo cookie hoạt động trên tất cả subdomain
-  document.cookie = name + "=" + value + "; " + expires + "; path=/; SameSite=None; secure=false";
+  const isHttps = typeof window !== "undefined" && window.location?.protocol === "https:";
+  const secureAttr = isHttps ? "; Secure" : "";
+  document.cookie = name + "=" + value + "; " + expires + "; path=/; SameSite=Lax" + secureAttr;
 }
 //lấy cookie
 export function getCookie(name) {

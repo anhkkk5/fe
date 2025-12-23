@@ -24,6 +24,8 @@ import {
   adminGetReviewDetail,
 } from "../../../services/companyReviews/companyReviewsServices";
 
+import "./style.css";
+
 const { Title, Text } = Typography;
 
 const statusOptions = [
@@ -256,7 +258,7 @@ function CompanyReviewsManagement() {
   ];
 
   return (
-    <div>
+    <div className="admin-management-container">
       <Card>
         <Space style={{ width: "100%", justifyContent: "space-between" }}>
           <Title level={4} style={{ margin: 0 }}>

@@ -377,6 +377,11 @@ function Header() {
       onClick: () => navigate("/friends"),
     },
     {
+      key: "chat",
+      label: "Chat",
+      onClick: () => navigate("/chat"),
+    },
+    {
       key: "logout",
       label: "Đăng xuất",
       onClick: handleLogout,

@@ -38,6 +38,12 @@ export const connectSocket = () => {
       } catch (_e) {}
     });
 
+    socket.on("chat:message", (payload) => {
+      try {
+        window.dispatchEvent(new CustomEvent("chat:message", { detail: payload }));
+      } catch (_e) {}
+    });
+
     return socket;
   } catch (_e) {
     return null;

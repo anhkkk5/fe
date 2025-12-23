@@ -49,6 +49,9 @@ import CompanyInterviewSchedules from "../pages/CompanyInterviewSchedules/index.
 import MyInterviews from "../pages/MyInterviews/index.jsx";
 import NotificationsPage from "../pages/Notifications/index.jsx";
 
+/* Chat */
+import ChatPage from "../pages/Chat/index.jsx";
+
 /* Friends */
 import FriendsPage from "../pages/Friends/index.jsx";
 import FriendRequestsPage from "../pages/Friends/Requests.jsx";
@@ -133,6 +136,8 @@ export const routes = [
       { path: "company/interviews", element: <CompanyInterviewSchedules /> },
       { path: "interviews", element: <MyInterviews /> },
       { path: "notifications", element: <NotificationsPage /> },
+
+      { path: "chat", element: <ChatPage /> },
 
       { path: "friends", element: <FriendsPage /> },
       { path: "friends/requests", element: <FriendRequestsPage /> },
